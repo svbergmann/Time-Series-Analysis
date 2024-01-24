@@ -1,0 +1,180 @@
+---
+title: "Problem Solving Set 1"
+author: Sven Bergmann
+date: January 24, 2024
+output: pdf_document
+---
+
+```{r, echo = F}
+library(knitr)
+opts_chunk$set(tidy.opts = list(width.cutoff = 60), tidy = TRUE, fig.width = 12, fig.height = 8)
+```
+```{r}
+set.seed(1401)
+```
+# Part 1
+```{r}
+n <- 120
+```
+```{r}
+series1 <- as.ts(rchisq(n, 2, ncp = 0))
+series2 <- as.ts(rchisq(n, 2, ncp = 0))
+series3 <- as.ts(rchisq(n, 2, ncp = 0))
+series4 <- as.ts(rchisq(n, 2, ncp = 0))
+series5 <- as.ts(rchisq(n, 2, ncp = 0))
+```
+```{r}
+#pdf.options()
+#pdf("PS1TSPlotsPt1.pdf")
+par(mfrow = c(3, 2))
+plot(series1, xlab = expression("Time"), ylab = expression(paste("Y"[1][t])), main = expression(paste("Time Series Plot of Y"[1[t]])))
+plot(series2, xlab = expression("Time"), ylab = expression(paste("Y"[2][t])), main = expression(paste("Time Series Plot of Y"[2[t]])))
+plot(series3, xlab = expression("Time"), ylab = expression(paste("Y"[3][t])), main = expression(paste("Time Series Plot of Y"[3[t]])))
+plot(series4, xlab = expression("Time"), ylab = expression(paste("Y"[4][t])), main = expression(paste("Time Series Plot of Y"[4[t]])))
+plot(series5, xlab = expression("Time"), ylab = expression(paste("Y"[5][t])), main = expression(paste("Time Series Plot of Y"[5[t]])))
+#dev.off()
+```
+
+### $Y_1$
+- spikes between 50 and 70
+- centered around 2
+- no patterns / random scatter
+
+### $Y_2$
+- more variation than $Y_1$
+- still centered at 2
+- no patterns
+
+### $Y_3$
+- similar to $Y_1$
+- spike at 70
+
+### $Y_4$
+- centered at 2
+- spike near 60
+- random scatter
+
+### $Y_5$
+- similar to $Y_1$, $Y_3$
+- spike at / around 90
+```{r}
+#pdf.options()
+#pdf("PS1NPPlotsPt1.pdf")
+par(mfrow = c(3, 2))
+qqnorm(series1, main = expression(paste("Normal Probability Plot of Y"[1[t]])))
+qqnorm(series2, main = expression(paste("Normal Probability Plot of Y"[2[t]])))
+qqnorm(series3, main = expression(paste("Normal Probability Plot of Y"[3[t]])))
+qqnorm(series4, main = expression(paste("Normal Probability Plot of Y"[4[t]])))
+qqnorm(series5, main = expression(paste("Normal Probability Plot of Y"[5[t]])))
+#dev.off()
+```
+- not linear,
+- heavy right tail -> skewed right
+```{r}
+#pdf.options()
+#pdf("PS1HistsPt1.pdf")
+par(mfrow = c(3, 2))
+hist(series1, xlab = expression(paste("Y"[1[t]])), main = expression(paste("Histogram of Y"[1[t]])))
+hist(series2, xlab = expression(paste("Y"[2[t]])), main = expression(paste("Histogram of Y"[2[t]])))
+hist(series3, xlab = expression(paste("Y"[3[t]])), main = expression(paste("Histogram of Y"[3[t]])))
+hist(series4, xlab = expression(paste("Y"[4[t]])), main = expression(paste("Histogram of Y"[4[t]])))
+hist(series5, xlab = expression(paste("Y"[5[t]])), main = expression(paste("Histogram of Y"[5[t]])))
+#dev.off()
+```
+# Part 2
+
+## Expectations
+
+- properties of a t-dist.
+- look somewhat normal
+- unimodal
+- symmetric
+- centered about 0
+- random scatter / no patterns - property of random sample
+```{r}
+n <- 100
+series1 <- as.ts(rt(n, 5, ncp = 0))
+series2 <- as.ts(rt(n, 5, ncp = 0))
+series3 <- as.ts(rt(n, 5, ncp = 0))
+series4 <- as.ts(rt(n, 5, ncp = 0))
+series5 <- as.ts(rt(n, 5, ncp = 0))
+```
+```{r}
+#pdf.options()
+#pdf("PS1TSPlotsPt2.pdf")
+par(mfrow = c(3, 2))
+plot(series1, xlab = expression("Time"), ylab = expression(paste("Y"[1][t])), main = expression(paste("Time Series Plot of Y"[1[t]])))
+plot(series2, xlab = expression("Time"), ylab = expression(paste("Y"[2][t])), main = expression(paste("Time Series Plot of Y"[2[t]])))
+plot(series3, xlab = expression("Time"), ylab = expression(paste("Y"[3][t])), main = expression(paste("Time Series Plot of Y"[3[t]])))
+plot(series4, xlab = expression("Time"), ylab = expression(paste("Y"[4][t])), main = expression(paste("Time Series Plot of Y"[4[t]])))
+plot(series5, xlab = expression("Time"), ylab = expression(paste("Y"[5][t])), main = expression(paste("Time Series Plot of Y"[5[t]])))
+#dev.off()
+```
+
+### $Y_1$
+- centered at 0
+- spike at 50
+- random scatter / no patterns
+
+### $Y_2$
+- signs of uneven spread
+- suggests nonstationary series
+- centered at 0
+- no patterns
+
+### $Y_3$
+- centered at 0
+- random scatter
+- fairly even spread
+
+### $Y_4$
+- centered at 0
+- possible periodic pattern
+- fairly even spread
+
+### $Y_5$
+- centered at 0
+- random scatter
+- fairly even spread
+```{r}
+#pdf.options()
+#pdf("PS1NPPlotsPt2.pdf")
+par(mfrow = c(3, 2))
+qqnorm(series1, main = expression(paste("Normal Probability Plot of Y"[1[t]])))
+qqnorm(series2, main = expression(paste("Normal Probability Plot of Y"[2[t]])))
+qqnorm(series3, main = expression(paste("Normal Probability Plot of Y"[3[t]])))
+qqnorm(series4, main = expression(paste("Normal Probability Plot of Y"[4[t]])))
+qqnorm(series5, main = expression(paste("Normal Probability Plot of Y"[5[t]])))
+#dev.off()
+```
+
+### $Y_1$
+- heavy right tail
+- left side - tail resembles that of a normal distribution
+
+### $Y_2$
+- two heavy tails
+- middle looks really normal
+
+### $Y_3$
+- heavy tails
+- middle looks okay
+- lighter than tails of $Y_2$
+
+### $Y_4$
+- both tails are heavy
+- middle is linear
+
+### $Y_5$
+- similar to $Y_4$
+```{r}
+#pdf.options()
+#pdf("PS1HistsPt2.pdf")
+par(mfrow = c(3, 2))
+hist(series1, xlab = expression(paste("Y"[1[t]])), main = expression(paste("Histogram of Y"[1[t]])))
+hist(series2, xlab = expression(paste("Y"[2[t]])), main = expression(paste("Histogram of Y"[2[t]])))
+hist(series3, xlab = expression(paste("Y"[3[t]])), main = expression(paste("Histogram of Y"[3[t]])))
+hist(series4, xlab = expression(paste("Y"[4[t]])), main = expression(paste("Histogram of Y"[4[t]])))
+hist(series5, xlab = expression(paste("Y"[5[t]])), main = expression(paste("Histogram of Y"[5[t]])))
+#dev.off()
+```

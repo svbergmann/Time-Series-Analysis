@@ -17,22 +17,13 @@ set.seed(1401)
 n <- 120
 ```
 ```{r}
-series1 <- as.ts(rchisq(n, 2, ncp = 0))
-series2 <- as.ts(rchisq(n, 2, ncp = 0))
-series3 <- as.ts(rchisq(n, 2, ncp = 0))
-series4 <- as.ts(rchisq(n, 2, ncp = 0))
-series5 <- as.ts(rchisq(n, 2, ncp = 0))
+series_list <- replicate(5, as.ts(rchisq(n, 2, ncp = 0)))
 ```
 ```{r}
-#pdf.options()
-#pdf("PS1TSPlotsPt1.pdf")
 par(mfrow = c(3, 2))
-plot(series1, xlab = expression("Time"), ylab = expression(paste("Y"[1][t])), main = expression(paste("Time Series Plot of Y"[1[t]])))
-plot(series2, xlab = expression("Time"), ylab = expression(paste("Y"[2][t])), main = expression(paste("Time Series Plot of Y"[2[t]])))
-plot(series3, xlab = expression("Time"), ylab = expression(paste("Y"[3][t])), main = expression(paste("Time Series Plot of Y"[3[t]])))
-plot(series4, xlab = expression("Time"), ylab = expression(paste("Y"[4][t])), main = expression(paste("Time Series Plot of Y"[4[t]])))
-plot(series5, xlab = expression("Time"), ylab = expression(paste("Y"[5][t])), main = expression(paste("Time Series Plot of Y"[5[t]])))
-#dev.off()
+for (i in 1:5) {
+  plot(series_list[, i], type = 'l', xlab = expression("Time"), ylab = expression(paste("Y"[i][t])), main = expression(paste("Time Series Plot of Y"[1[i]])))
+}
 ```
 
 ### $Y_1$
@@ -58,28 +49,19 @@ plot(series5, xlab = expression("Time"), ylab = expression(paste("Y"[5][t])), ma
 - similar to $Y_1$, $Y_3$
 - spike at / around 90
 ```{r}
-#pdf.options()
-#pdf("PS1NPPlotsPt1.pdf")
 par(mfrow = c(3, 2))
-qqnorm(series1, main = expression(paste("Normal Probability Plot of Y"[1[t]])))
-qqnorm(series2, main = expression(paste("Normal Probability Plot of Y"[2[t]])))
-qqnorm(series3, main = expression(paste("Normal Probability Plot of Y"[3[t]])))
-qqnorm(series4, main = expression(paste("Normal Probability Plot of Y"[4[t]])))
-qqnorm(series5, main = expression(paste("Normal Probability Plot of Y"[5[t]])))
-#dev.off()
+for (i in 1:5) {
+  qqnorm(series_list[, i], main = expression(paste("Normal Probability Plot of Y"[i[t]])))
+  abline(a = 0, b = 1, col = 'red')
+}
 ```
 - not linear,
 - heavy right tail -> skewed right
 ```{r}
-#pdf.options()
-#pdf("PS1HistsPt1.pdf")
 par(mfrow = c(3, 2))
-hist(series1, xlab = expression(paste("Y"[1[t]])), main = expression(paste("Histogram of Y"[1[t]])))
-hist(series2, xlab = expression(paste("Y"[2[t]])), main = expression(paste("Histogram of Y"[2[t]])))
-hist(series3, xlab = expression(paste("Y"[3[t]])), main = expression(paste("Histogram of Y"[3[t]])))
-hist(series4, xlab = expression(paste("Y"[4[t]])), main = expression(paste("Histogram of Y"[4[t]])))
-hist(series5, xlab = expression(paste("Y"[5[t]])), main = expression(paste("Histogram of Y"[5[t]])))
-#dev.off()
+for (i in 1:5) {
+  hist(series_list[, i], xlab = expression(paste("Y"[i[t]])), main = expression(paste("Histogram of Y"[i[t]])))
+}
 ```
 # Part 2
 
@@ -93,22 +75,15 @@ hist(series5, xlab = expression(paste("Y"[5[t]])), main = expression(paste("Hist
 - random scatter / no patterns - property of random sample
 ```{r}
 n <- 100
-series1 <- as.ts(rt(n, 5, ncp = 0))
-series2 <- as.ts(rt(n, 5, ncp = 0))
-series3 <- as.ts(rt(n, 5, ncp = 0))
-series4 <- as.ts(rt(n, 5, ncp = 0))
-series5 <- as.ts(rt(n, 5, ncp = 0))
 ```
 ```{r}
-#pdf.options()
-#pdf("PS1TSPlotsPt2.pdf")
+series_list <- replicate(5, as.ts(rt(n, 5, ncp = 0)))
+```
+```{r}
 par(mfrow = c(3, 2))
-plot(series1, xlab = expression("Time"), ylab = expression(paste("Y"[1][t])), main = expression(paste("Time Series Plot of Y"[1[t]])))
-plot(series2, xlab = expression("Time"), ylab = expression(paste("Y"[2][t])), main = expression(paste("Time Series Plot of Y"[2[t]])))
-plot(series3, xlab = expression("Time"), ylab = expression(paste("Y"[3][t])), main = expression(paste("Time Series Plot of Y"[3[t]])))
-plot(series4, xlab = expression("Time"), ylab = expression(paste("Y"[4][t])), main = expression(paste("Time Series Plot of Y"[4[t]])))
-plot(series5, xlab = expression("Time"), ylab = expression(paste("Y"[5][t])), main = expression(paste("Time Series Plot of Y"[5[t]])))
-#dev.off()
+for (i in 1:5) {
+  plot(series_list[, i], type = 'l', xlab = expression("Time"), ylab = expression(paste("Y"[i][t])), main = expression(paste("Time Series Plot of Y"[1[i]])))
+}
 ```
 
 ### $Y_1$
@@ -137,15 +112,11 @@ plot(series5, xlab = expression("Time"), ylab = expression(paste("Y"[5][t])), ma
 - random scatter
 - fairly even spread
 ```{r}
-#pdf.options()
-#pdf("PS1NPPlotsPt2.pdf")
 par(mfrow = c(3, 2))
-qqnorm(series1, main = expression(paste("Normal Probability Plot of Y"[1[t]])))
-qqnorm(series2, main = expression(paste("Normal Probability Plot of Y"[2[t]])))
-qqnorm(series3, main = expression(paste("Normal Probability Plot of Y"[3[t]])))
-qqnorm(series4, main = expression(paste("Normal Probability Plot of Y"[4[t]])))
-qqnorm(series5, main = expression(paste("Normal Probability Plot of Y"[5[t]])))
-#dev.off()
+for (i in 1:5) {
+  qqnorm(series_list[, i], main = expression(paste("Normal Probability Plot of Y"[i[t]])))
+  abline(a = 0, b = 1, col = 'red')
+}
 ```
 
 ### $Y_1$
@@ -168,13 +139,8 @@ qqnorm(series5, main = expression(paste("Normal Probability Plot of Y"[5[t]])))
 ### $Y_5$
 - similar to $Y_4$
 ```{r}
-#pdf.options()
-#pdf("PS1HistsPt2.pdf")
 par(mfrow = c(3, 2))
-hist(series1, xlab = expression(paste("Y"[1[t]])), main = expression(paste("Histogram of Y"[1[t]])))
-hist(series2, xlab = expression(paste("Y"[2[t]])), main = expression(paste("Histogram of Y"[2[t]])))
-hist(series3, xlab = expression(paste("Y"[3[t]])), main = expression(paste("Histogram of Y"[3[t]])))
-hist(series4, xlab = expression(paste("Y"[4[t]])), main = expression(paste("Histogram of Y"[4[t]])))
-hist(series5, xlab = expression(paste("Y"[5[t]])), main = expression(paste("Histogram of Y"[5[t]])))
-#dev.off()
+for (i in 1:5) {
+  hist(series_list[, i], xlab = expression(paste("Y"[i[t]])), main = expression(paste("Histogram of Y"[i[t]])))
+}
 ```

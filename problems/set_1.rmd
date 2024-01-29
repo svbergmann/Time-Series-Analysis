@@ -12,7 +12,9 @@ opts_chunk$set(tidy.opts = list(width.cutoff = 60), tidy = TRUE, fig.width = 12,
 ```{r}
 set.seed(1401)
 ```
+
 # Part 1
+
 ```{r}
 n <- 120
 ```
@@ -55,6 +57,7 @@ for (i in 1:5) {
   abline(a = 0, b = 1, col = 'red')
 }
 ```
+
 - not linear,
 - heavy right tail -> skewed right
 ```{r}
@@ -63,6 +66,7 @@ for (i in 1:5) {
   hist(series_list[, i], xlab = expression(paste("Y"[i[t]])), main = expression(paste("Histogram of Y"[i[t]])))
 }
 ```
+
 # Part 2
 
 ## Expectations

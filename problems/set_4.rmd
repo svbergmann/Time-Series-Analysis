@@ -1,0 +1,135 @@
+---
+title: "Problem Solving Set 4"
+author: Sven Bergmann
+date: February 12, 2024
+output: pdf_document
+---
+```{r, echo = F}
+library(knitr)
+opts_chunk$set(tidy.opts = list(width.cutoff = 60), tidy = TRUE, fig.width = 12, fig.height = 8)
+```
+```{r, warning = F, message = F}
+library(TSA)
+library(tseries)
+library(forecast)
+```
+
+# Problem 3
+
+```{r}
+data(wages)
+plot(wages, xlab = expression("Time"), ylab = expression("Wages"), main = expression("Time Series Plot of Wages"))
+```
+
+## Detrend
+
+```{r}
+model1 <- lm(wages~time(wages))
+res <- as.ts(rstandard(model1))
+plot(res, xlab=expression("Time"), ylab=expression("Residuals"), main="Plot of Residuals versus Time")
+```
+```{r}
+sq <- time(wages)^2
+model2 <- lm(wages~sq  + time(wages))
+res2 <- as.ts(rstandard(model2))
+plot(res2, xlab=expression("Time"), ylab=expression("Residuals"), main="Plot of Residuals versus Time")
+```
+```{r}
+acf(res2, lag.max=30, main="ACF Quadratic Residuals")$acf
+# par(mfrow=c(2,2))
+qqnorm(res2, main="Normal Probability Plot--Residuals Quad Fit")
+abline(a=0,b=1)
+hist(res2, xlab="Residuals", main="Histogram of Residuals")
+fits <- as.ts(model2$fitted.values)
+plot(fits, res2, xlab="Residuals", ylab="Fitted Values", main="Residuals versus Fits")
+```
+
+# Problem 4
+
+```{r}
+data(beersales)
+```
+```{r}
+plot(beersales, xlab="Time", ylab="Beer Sales", main="Beer Sales No Symbols")
+plot(beersales, xlab="Time", ylab="Beer Sales", main="Beer Sales With Symbols")
+points(y=beersales, x=time(beersales), pch = as.vector(season(beersales)))
+```
+```{r}
+months <- season(beersales)
+model <- lm(beersales~months-1)
+summary(model)
+```
+```{r}
+plot(rstudent(model), x = as.vector(time(beersales)), xlab="Time", ylab="Residuals", main="Standardized Residuals", type="l")
+points(y=rstudent(model), x=as.vector(time(beersales)), pch = as.vector(season(beersales)))
+```
+```{r}
+time <- time(beersales)
+time2 <- time^2
+model2 <- lm(beersales~(months-1) + time + time2)
+summary(model2)
+```
+```{r}
+res2 <- as.ts(rstandard(model2))
+plot(res2, x=as.vector(time(beersales)), xlab="Time", ylab="Residuals", main="Standardized Residuals", type="l")
+points(y=res2, x=as.vector(time(beersales)), pch = as.vector(season(beersales)))
+```
+```{r}
+acf(res2, main="Autocorrelation Plot of Residuals")$acf #gives ACF values
+```
+```{r}
+fits <- as.ts(model2$fitted.values)
+plot(fits, res2, xlab="Fitted Values", ylab="Residuals", main="Residuals vs Fits")
+```
+```{r}
+hist(res2, xlab="Residual", main="Histogram of Residuals")
+abline(a=0, b=1)
+```
+```{r}
+shapiro.test(res2)
+```
+
+# Problem 5
+
+```{r}
+data(prescrip)
+```
+```{r}
+plot(prescrip,xlab="Time", ylab="Prescription Cost", main="Prescription Cost vs Time")
+points(y=prescrip, x=time(prescrip), pch=as.vector(season(prescrip)))
+```
+```{r}
+y <- NULL
+n <- length(prescrip)
+
+for(i in 2:n){
+  y <- c(y, 100*(prescrip[i]/prescrip[i-1]-1))
+}
+pct.change <- ts(y, frequency=12, start=c(1986, 9), end=c(1992,3))
+plot(pct.change, ylab="Percentage Change", main="Plot of Percentage Change")
+points(y=pct.change, x=time(pct.change), pch=as.vector(season(pct.change)))
+```
+```{r}
+har. <- harmonic(pct.change, 1)
+model.presc <- lm(pct.change~har.)
+summary(model.presc)
+```
+```{r}
+res <- ts(rstudent(model.presc), frequency = 12, start = c(1986, 9), end=c(1992, 3))
+plot(res, ylab="Residuals", main="Time Series Plot of Residuals")
+points(y=res, x=time(res), pch=as.vector(season(res)))
+```
+```{r}
+adf.test(res)
+```
+```{r}
+acf(res, main="Autocorrelation of Residuals")
+```
+```{r}
+hist(res, xlab="Residual", main="Histogram of Residuals")
+qqnorm(res, main="Normal Probability Plot of Residuals")
+abline(a=0, b=1)
+```
+```{r}
+shapiro.test(res)
+```

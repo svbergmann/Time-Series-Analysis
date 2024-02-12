@@ -21,22 +21,67 @@ data(wages)
 plot(wages, xlab = expression("Time"), ylab = expression("Wages"), main = expression("Time Series Plot of Wages"))
 ```
 
+Description:
+
+- Wages expectation: may be a linear trend
+- Increasing trend: sqrt or logarithmic?
+
 ## Detrend
 
 ```{r}
 model1 <- lm(wages~time(wages))
+summary(model1)
+```
+
+- Fit linear trend
+- $Y_t$ = wages
+- $Y_t = \beta_0 + \beta_1 t + e_t$ where $\{e_t\} \sim \mathcal{N}(0, \sigma^2)$
+- We expect the wages to increase by $0.28 per year
+- Significant linear trend in series
+
+```{r}
 res <- as.ts(rstandard(model1))
 plot(res, xlab=expression("Time"), ylab=expression("Residuals"), main="Plot of Residuals versus Time")
 ```
+
+b) Residuals vs time:
+Trend - possible negative quadratic trend or uneven spread at the ends compared to middle
+
 ```{r}
 sq <- time(wages)^2
 model2 <- lm(wages~sq  + time(wages))
+summary(model2)
+```
+
+d)
+$Y_t = \beta_0 + \beta_1 t + \beta t^2 + e_t$ where $\{e_t\} \sim \mathcal{N}(0, \sigma^2)$
+
+Interpreting trend:
+- $\hat{Y}_{t+1} - \hat{Y}_t = -85950 - 0.0215(t+1)^2 + 85.34(t+1) + 85950 + 0.0215t^2 - 85.34t$
+- Depends on time - hard to interpret
+- linear + quadratic terms are significant (p-value ca. $10^{-12}$)
+- Quadratic trend mode explains 98.64% of variation in wages
+
+```{r}
 res2 <- as.ts(rstandard(model2))
 plot(res2, xlab=expression("Time"), ylab=expression("Residuals"), main="Plot of Residuals versus Time")
 ```
+
+Residuals vs time:
+- no apparent trends
+- slight deviation from equal variance - still ok to use this model
+
 ```{r}
 acf(res2, lag.max=30, main="ACF Quadratic Residuals")$acf
-# par(mfrow=c(2,2))
+```
+
+Independence:
+- Significant autocorrelation - lags 1-3, 15-21
+- Periodic behaviour - suggest seasonal trend
+- White noise assumption is suspect
+
+```{r}
+par(mfrow=c(2,2))
 qqnorm(res2, main="Normal Probability Plot--Residuals Quad Fit")
 abline(a=0,b=1)
 hist(res2, xlab="Residuals", main="Histogram of Residuals")
@@ -44,16 +89,51 @@ fits <- as.ts(model2$fitted.values)
 plot(fits, res2, xlab="Residuals", ylab="Fitted Values", main="Residuals versus Fits")
 ```
 
+Normality:
+- Quantiles of the observed / empirical distribution vs theoretical quantiles of $\mathcal{N}(0,1)$
+- Points fall close to $y=x$
+- Deviations appear periodic
+- Possible seasonality in residuals
+
+Residuals vs Fits:
+- Periodic behaviour
+- Sign of seasonal trend
+
+Summary:
+- Quadratic trend model
+  - explains a lot of variation in wages
+  - All model assumptions (aside from mean 0) look suspect
+  - Model may be inadequate for explaining how wages change over time
+
+
 # Problem 4
 
 ```{r}
 data(beersales)
 ```
+
+- units: millions of barrels
+- by month from Jan 75 - Dec 90
+- Expectation:
+  - seasonal behaviour
+  - possible linear trend because the population grows and increased production
+
 ```{r}
 plot(beersales, xlab="Time", ylab="Beer Sales", main="Beer Sales No Symbols")
+```
+
+- Seasonal trend - periodic behaviour
+- maybe negative quadratic or logarithmic trend
+
+```{r}
 plot(beersales, xlab="Time", ylab="Beer Sales", main="Beer Sales With Symbols")
 points(y=beersales, x=time(beersales), pch = as.vector(season(beersales)))
 ```
+
+- Seasonality:
+  - low in december, higher in the summer months
+  - strong seasonal trend
+
 ```{r}
 months <- season(beersales)
 model <- lm(beersales~months-1)

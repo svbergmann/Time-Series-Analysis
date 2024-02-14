@@ -130,9 +130,30 @@ plot(beersales, xlab="Time", ylab="Beer Sales", main="Beer Sales With Symbols")
 points(y=beersales, x=time(beersales), pch = as.vector(season(beersales)))
 ```
 
+c)
 - Seasonality:
   - low in december, higher in the summer months
   - strong seasonal trend
+- Each month has a different mean - seasonal means model
+  - $Y_t = \mu_j + e_t$,
+  - $j=1, \ldots, 12$,
+  - $1, \ldots, n$,
+  - $e_t \sim \mathcal{N}(0, \sigma_2)$,
+  - $\mu_j$ - beer sales per month
+- Seasonal Means:
+  - Jan 12.49
+  - Feb 12.34
+  - Mar 14.57
+  - Apr 14.88
+  - May 16.09
+  - Jun 16.34
+  - Jul 16.25
+  - Aug 16.10
+  - Sep 14.06
+  - Oct 13.74
+  - Nov 12.44
+  - Dec 12.06
+  - Seasonal means captures 99.5% of variation in beer sales
 
 ```{r}
 months <- season(beersales)
@@ -143,6 +164,21 @@ summary(model)
 plot(rstudent(model), x = as.vector(time(beersales)), xlab="Time", ylab="Residuals", main="Standardized Residuals", type="l")
 points(y=rstudent(model), x=as.vector(time(beersales)), pch = as.vector(season(beersales)))
 ```
+
+d) Plot of residuals
+- clear increasing trend
+- even variation around trend
+
+e)
+- $Y_t = \mu_j + \beta_1 t + \beta_2 t^2 + e_t$,
+- $t=1, \dots, n$,
+- $j=t \mod 12 + 1$,
+- $e_t \sim \mathcal{N}(0, \sigma_^2)$ iid.
+- $\hat{Y}_t = -71500 + 7196 t - 0.0181 t^2$ for Sep - Apr
+- $\hat{Y}_t = -71490 + 7196 t - 0.0181 t^2$ for May - Aug
+- Explains 99.84% of variation in beer sales
+- seasonal means, linear term, quadratic term all significant
+
 ```{r}
 time <- time(beersales)
 time2 <- time^2
@@ -155,20 +191,65 @@ plot(res2, x=as.vector(time(beersales)), xlab="Time", ylab="Residuals", main="St
 points(y=res2, x=as.vector(time(beersales)), pch = as.vector(season(beersales)))
 ```
 ```{r}
+adf.test(res2)
+```
+
+f) Residuals
+- seasonality accounted for
+- possible trend or non constant variance
+- residuals may not be stationary
+-> white noise assumption is suspect
+- Dickey Fuller test adf.test(series)
+  - $H_0:$ Series is non-stationary
+  - $H_1:$ Series is stationary
+  - low p-values -> evidence for stationarity
+  - Here: p-value = 0.01,
+  - Residuals may be stationary,
+  - White noise may be reasonable
+
+```{r}
 acf(res2, main="Autocorrelation Plot of Residuals")$acf #gives ACF values
 ```
+
+g) Autocorrelation
+- significant autocorrelation at lags 1, 3, 8, 10, 11, 21, (?)
+- small autocorrelations
+  - white noise assumption may be ok
+
 ```{r}
 fits <- as.ts(model2$fitted.values)
 plot(fits, res2, xlab="Fitted Values", ylab="Residuals", main="Residuals vs Fits")
 ```
+
+h) Res vs. Fits
+- random scatter about 0
+- possible low outlier
+- fairly even spread
+- no evidence against stationarity
+
 ```{r}
-hist(res2, xlab="Residual", main="Histogram of Residuals")
+qqnorm(res2, main="Normal Probability Plot of Residuals")
 abline(a=0, b=1)
 ```
+
+h) Normal Probability Plot
+- vary linear
+- no evidence against normal assumption
+
 ```{r}
 shapiro.test(res2)
 ```
 
+Shapiro-Wilk test
+- $H_0:$ Series is normal
+- $H_1:$ Series is not normal
+- High p-value -> evidence in favor of normal assumption
+- shapiro.test(series)
+- Here: p-value = 0.5019
+
+```{r}
+hist(res2, xlab="Residual", main="Histogram of Residuals")
+```
 # Problem 5
 
 ```{r}
@@ -178,6 +259,18 @@ data(prescrip)
 plot(prescrip,xlab="Time", ylab="Prescription Cost", main="Prescription Cost vs Time")
 points(y=prescrip, x=time(prescrip), pch=as.vector(season(prescrip)))
 ```
+
+a)
+- Cyclical behaviour along positive linear trend
+- spread increases around trend line
+- lower costs tend to be in cooler months
+- higher in warmer months
+
+b)
+- $\frac{Y_t-Y_{t-1}}{Y_{t-1}} \cdot 100 = Y_t^*$
+- no obvious patterns
+-
+
 ```{r}
 y <- NULL
 n <- length(prescrip)
@@ -189,11 +282,27 @@ pct.change <- ts(y, frequency=12, start=c(1986, 9), end=c(1992,3))
 plot(pct.change, ylab="Percentage Change", main="Plot of Percentage Change")
 points(y=pct.change, x=time(pct.change), pch=as.vector(season(pct.change)))
 ```
+
+Cosine trend
+All based on the percentage change
+- $Y_t^* = \beta_0 + \beta_1 \cos(2\pi ft) + \beta_2 \sin(2\pi ft) + e_t$,
+- $e_t \sim \mathcal{N}(0, \sigma^2)$
+- $f=\frac{1}{12}$
+- so: $Y_t^* = \beta_0 + \beta_1 \cos(\frac{\pi t}{6}) + \beta_2 \sin(\frac{\pi t}{6}) + e_t$
+- $\hat{Y_t^*} = 1.2217 - 0.6538 \cos(\frac{\pi t}{6}) + 1.6596 \sin(\frac{\pi t}{6})$
+- only explains 31.48% of variation in percentage change
+
 ```{r}
 har. <- harmonic(pct.change, 1)
 model.presc <- lm(pct.change~har.)
 summary(model.presc)
 ```
+
+d) TS plot of residuals
+- Captured seasonality
+- no patterns, random scatter around 0
+- fairly even spread -> white noise assumption is okay
+
 ```{r}
 res <- ts(rstudent(model.presc), frequency = 12, start = c(1986, 9), end=c(1992, 3))
 plot(res, ylab="Residuals", main="Time Series Plot of Residuals")
@@ -205,11 +314,24 @@ adf.test(res)
 ```{r}
 acf(res, main="Autocorrelation of Residuals")
 ```
+
+Autocorrelation
+- barely significant autocorrelation at lags 1, 13
+- magnitudes around 0.23
+- white noise okay
+
 ```{r}
 hist(res, xlab="Residual", main="Histogram of Residuals")
+```
+```{r}
 qqnorm(res, main="Normal Probability Plot of Residuals")
 abline(a=0, b=1)
 ```
+
+Normality
+- fairly linear cyclical trend line not enough to worry about
+- normality is okay
+
 ```{r}
 shapiro.test(res)
 ```

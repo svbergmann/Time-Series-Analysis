@@ -1,0 +1,143 @@
+---
+title: "Time Series"
+subtitle: "Homework 2"
+author: Helen Kafka, Sven Bergmann
+date: 02/28/24
+output: pdf_document
+---
+
+```{r, echo = F}
+library(knitr)
+opts_chunk$set(tidy.opts = list(width.cutoff = 60), tidy = TRUE)
+```
+
+# Problem 1
+
+# Problem 2
+
+## a)
+
+```{r, warning = F, message = F}
+library(TSA)
+library(tseries)
+```
+
+```{r}
+data(winnebago)
+plot(winnebago, xlab = expression("Time"), ylab = expression("Sales"), main = expression("Time Series Plot of Winnebago"))
+```
+
+Interpretation:
+- The time series shows an overall upwards trend between the years 1967 and 1972.
+- Between the years 1970 and 1972 the increase is at its highest.
+
+## b)
+
+
+```{r}
+model1 <- lm(winnebago ~ time(winnebago))
+summary(model1)
+```
+
+- We expect the wages to increase by $200.74 per year
+- $69.15%$ of the variance can be explained by the predictor variables
+- the linear trend is significant because the p-value $2.2 \cdot 10^{-16}$ is smaller than $10^{-12}$
+
+
+```{r}
+res <- as.ts(rstandard(model1))
+plot(res, xlab = expression("Time"), ylab = expression("Residuals"), main = "Plot of Residuals versus Time")
+abline(h = 0)
+```
+
+Interpretation:
+- The residuals plot shows somewhat random movement around zero.
+- More uneven spread between ca. 35 to 65 in comparison to 0 to 35.
+- There may be a “seasonal” cyclical trend.
+
+
+## c)
+
+```{r}
+ln_winnebago <- log(winnebago)
+plot(ln_winnebago, xlab = expression("Time"), ylab = expression("ln Sales"), main = expression("Time Series Plot of Winnebago"))
+```
+
+Interpretation:
+- The time series plot of the transformed values shows a linear upward trend (which corresponds with the untransformed data)
+- There is one dip around the year 1970
+- The "seasonal" trend seems more pronounced
+
+
+## d)
+
+```{r}
+model2 <- lm(ln_winnebago ~ time(ln_winnebago))
+summary(model2)
+```
+
+```{r}
+res2 <- as.ts(rstandard(model2))
+plot(res2, xlab = expression("Time"), ylab = expression("Residuals"), main = "ln Plot of Residuals versus Time")
+abline(h = 0)
+```
+
+Interpretation:
+- the ln-transformed residuals plot shows random movement around 0
+- There seems to be an overall cyclical trend
+
+## e) & f)
+
+```{r}
+months <- season(winnebago)
+model3 <- lm(ln_winnebago~months-1)
+summary(model3)
+```
+
+- $98.01%$ of the variance can be explained by the predictor variables
+- the linear trend is significant because the p-value $2.2 \cdot 10^{-16}$ is smaller than $10^{-12}$
+
+```{r}
+plot(rstudent(model3), x = as.vector(time(winnebago)), xlab="Time", ylab="Residuals", main="Standardized Residuals", type="l")
+points(y=rstudent(model3), x=as.vector(time(winnebago)), pch = as.vector(season(winnebago)))
+
+```
+
+Interpretation:
+
+## g)
+
+```{r}
+res2 <- as.ts(rstandard(model2))
+plot(res2, xlab=expression("Time"), ylab=expression("Residuals"), main="Plot of Residuals versus Time")
+
+```
+
+## h)
+
+```{r}
+acf(res2, main="Autocorrelation Plot of Residuals")$acf
+```
+
+
+## h) i)
+
+```{r}
+hist(res2, xlab="Residual", main="Histogram of Residuals")
+```
+
+
+```{r}
+shapiro.test(res2)
+```
+### Exercise 3
+## c)
+
+```{r}
+phi <- seq(-1, 1, by = 0.01)
+y <- (1 + phi)/(1-phi)
+plot(phi, y)
+```
+
+The closer $\phi$ is to -1, the closer the variance is to 0, thus the precision increases.
+The closer $\phi$ is to 1, the more the variance increases, and thus the precision decreases.

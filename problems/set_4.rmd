@@ -29,7 +29,7 @@ Description:
 ## Detrend
 
 ```{r}
-model1 <- lm(wages~time(wages))
+model1 <- lm(wages ~ time(wages))
 summary(model1)
 ```
 
@@ -41,7 +41,7 @@ summary(model1)
 
 ```{r}
 res <- as.ts(rstandard(model1))
-plot(res, xlab=expression("Time"), ylab=expression("Residuals"), main="Plot of Residuals versus Time")
+plot(res, xlab = expression("Time"), ylab = expression("Residuals"), main = "Plot of Residuals versus Time")
 ```
 
 b) Residuals vs time:
@@ -49,7 +49,7 @@ Trend - possible negative quadratic trend or uneven spread at the ends compared 
 
 ```{r}
 sq <- time(wages)^2
-model2 <- lm(wages~sq  + time(wages))
+model2 <- lm(wages ~ sq + time(wages))
 summary(model2)
 ```
 
@@ -64,7 +64,7 @@ Interpreting trend:
 
 ```{r}
 res2 <- as.ts(rstandard(model2))
-plot(res2, xlab=expression("Time"), ylab=expression("Residuals"), main="Plot of Residuals versus Time")
+plot(res2, xlab = expression("Time"), ylab = expression("Residuals"), main = "Plot of Residuals versus Time")
 ```
 
 Residuals vs time:
@@ -72,7 +72,7 @@ Residuals vs time:
 - slight deviation from equal variance - still ok to use this model
 
 ```{r}
-acf(res2, lag.max=30, main="ACF Quadratic Residuals")$acf
+acf(res2, lag.max = 30, main = "ACF Quadratic Residuals")$acf
 ```
 
 Independence:
@@ -81,12 +81,12 @@ Independence:
 - White noise assumption is suspect
 
 ```{r}
-par(mfrow=c(2,2))
-qqnorm(res2, main="Normal Probability Plot--Residuals Quad Fit")
-abline(a=0,b=1)
-hist(res2, xlab="Residuals", main="Histogram of Residuals")
+par(mfrow = c(2, 2))
+qqnorm(res2, main = "Normal Probability Plot--Residuals Quad Fit")
+abline(a = 0, b = 1)
+hist(res2, xlab = "Residuals", main = "Histogram of Residuals")
 fits <- as.ts(model2$fitted.values)
-plot(fits, res2, xlab="Residuals", ylab="Fitted Values", main="Residuals versus Fits")
+plot(fits, res2, xlab = "Residuals", ylab = "Fitted Values", main = "Residuals versus Fits")
 ```
 
 Normality:
@@ -101,9 +101,9 @@ Residuals vs Fits:
 
 Summary:
 - Quadratic trend model
-  - explains a lot of variation in wages
-  - All model assumptions (aside from mean 0) look suspect
-  - Model may be inadequate for explaining how wages change over time
+- explains a lot of variation in wages
+- All model assumptions (aside from mean 0) look suspect
+- Model may be inadequate for explaining how wages change over time
 
 
 # Problem 4
@@ -115,54 +115,54 @@ data(beersales)
 - units: millions of barrels
 - by month from Jan 75 - Dec 90
 - Expectation:
-  - seasonal behaviour
-  - possible linear trend because the population grows and increased production
+- seasonal behaviour
+- possible linear trend because the population grows and increased production
 
 ```{r}
-plot(beersales, xlab="Time", ylab="Beer Sales", main="Beer Sales No Symbols")
+plot(beersales, xlab = "Time", ylab = "Beer Sales", main = "Beer Sales No Symbols")
 ```
 
 - Seasonal trend - periodic behaviour
 - maybe negative quadratic or logarithmic trend
 
 ```{r}
-plot(beersales, xlab="Time", ylab="Beer Sales", main="Beer Sales With Symbols")
-points(y=beersales, x=time(beersales), pch = as.vector(season(beersales)))
+plot(beersales, xlab = "Time", ylab = "Beer Sales", main = "Beer Sales With Symbols")
+points(y = beersales, x = time(beersales), pch = as.vector(season(beersales)))
 ```
 
 c)
 - Seasonality:
-  - low in december, higher in the summer months
-  - strong seasonal trend
+- low in december, higher in the summer months
+- strong seasonal trend
 - Each month has a different mean - seasonal means model
-  - $Y_t = \mu_j + e_t$,
-  - $j=1, \ldots, 12$,
-  - $1, \ldots, n$,
-  - $e_t \sim \mathcal{N}(0, \sigma_2)$,
-  - $\mu_j$ - beer sales per month
+- $Y_t = \mu_j + e_t$,
+- $j=1, \ldots, 12$,
+- $1, \ldots, n$,
+- $e_t \sim \mathcal{N}(0, \sigma_2)$,
+- $\mu_j$ - beer sales per month
 - Seasonal Means:
-  - Jan 12.49
-  - Feb 12.34
-  - Mar 14.57
-  - Apr 14.88
-  - May 16.09
-  - Jun 16.34
-  - Jul 16.25
-  - Aug 16.10
-  - Sep 14.06
-  - Oct 13.74
-  - Nov 12.44
-  - Dec 12.06
-  - Seasonal means captures 99.5% of variation in beer sales
+- Jan 12.49
+- Feb 12.34
+- Mar 14.57
+- Apr 14.88
+- May 16.09
+- Jun 16.34
+- Jul 16.25
+- Aug 16.10
+- Sep 14.06
+- Oct 13.74
+- Nov 12.44
+- Dec 12.06
+- Seasonal means captures 99.5% of variation in beer sales
 
 ```{r}
 months <- season(beersales)
-model <- lm(beersales~months-1)
+model <- lm(beersales ~ months - 1)
 summary(model)
 ```
 ```{r}
-plot(rstudent(model), x = as.vector(time(beersales)), xlab="Time", ylab="Residuals", main="Standardized Residuals", type="l")
-points(y=rstudent(model), x=as.vector(time(beersales)), pch = as.vector(season(beersales)))
+plot(rstudent(model), x = as.vector(time(beersales)), xlab = "Time", ylab = "Residuals", main = "Standardized Residuals", type = "l")
+points(y = rstudent(model), x = as.vector(time(beersales)), pch = as.vector(season(beersales)))
 ```
 
 d) Plot of residuals
@@ -182,13 +182,13 @@ e)
 ```{r}
 time <- time(beersales)
 time2 <- time^2
-model2 <- lm(beersales~(months-1) + time + time2)
+model2 <- lm(beersales ~ (months - 1) + time + time2)
 summary(model2)
 ```
 ```{r}
 res2 <- as.ts(rstandard(model2))
-plot(res2, x=as.vector(time(beersales)), xlab="Time", ylab="Residuals", main="Standardized Residuals", type="l")
-points(y=res2, x=as.vector(time(beersales)), pch = as.vector(season(beersales)))
+plot(res2, x = as.vector(time(beersales)), xlab = "Time", ylab = "Residuals", main = "Standardized Residuals", type = "l")
+points(y = res2, x = as.vector(time(beersales)), pch = as.vector(season(beersales)))
 ```
 ```{r}
 adf.test(res2)
@@ -200,25 +200,25 @@ f) Residuals
 - residuals may not be stationary
 -> white noise assumption is suspect
 - Dickey Fuller test adf.test(series)
-  - $H_0:$ Series is non-stationary
-  - $H_1:$ Series is stationary
-  - low p-values -> evidence for stationarity
-  - Here: p-value = 0.01,
-  - Residuals may be stationary,
-  - White noise may be reasonable
+- $H_0:$ Series is non-stationary
+- $H_1:$ Series is stationary
+- low p-values -> evidence for stationarity
+- Here: p-value = 0.01,
+- Residuals may be stationary,
+- White noise may be reasonable
 
 ```{r}
-acf(res2, main="Autocorrelation Plot of Residuals")$acf #gives ACF values
+acf(res2, main = "Autocorrelation Plot of Residuals")$acf #gives ACF values
 ```
 
 g) Autocorrelation
 - significant autocorrelation at lags 1, 3, 8, 10, 11, 21, (?)
 - small autocorrelations
-  - white noise assumption may be ok
+- white noise assumption may be ok
 
 ```{r}
 fits <- as.ts(model2$fitted.values)
-plot(fits, res2, xlab="Fitted Values", ylab="Residuals", main="Residuals vs Fits")
+plot(fits, res2, xlab = "Fitted Values", ylab = "Residuals", main = "Residuals vs Fits")
 ```
 
 h) Res vs. Fits
@@ -228,8 +228,8 @@ h) Res vs. Fits
 - no evidence against stationarity
 
 ```{r}
-qqnorm(res2, main="Normal Probability Plot of Residuals")
-abline(a=0, b=1)
+qqnorm(res2, main = "Normal Probability Plot of Residuals")
+abline(a = 0, b = 1)
 ```
 
 h) Normal Probability Plot
@@ -248,7 +248,7 @@ Shapiro-Wilk test
 - Here: p-value = 0.5019
 
 ```{r}
-hist(res2, xlab="Residual", main="Histogram of Residuals")
+hist(res2, xlab = "Residual", main = "Histogram of Residuals")
 ```
 # Problem 5
 
@@ -256,8 +256,8 @@ hist(res2, xlab="Residual", main="Histogram of Residuals")
 data(prescrip)
 ```
 ```{r}
-plot(prescrip,xlab="Time", ylab="Prescription Cost", main="Prescription Cost vs Time")
-points(y=prescrip, x=time(prescrip), pch=as.vector(season(prescrip)))
+plot(prescrip, xlab = "Time", ylab = "Prescription Cost", main = "Prescription Cost vs Time")
+points(y = prescrip, x = time(prescrip), pch = as.vector(season(prescrip)))
 ```
 
 a)
@@ -275,12 +275,12 @@ b)
 y <- NULL
 n <- length(prescrip)
 
-for(i in 2:n){
-  y <- c(y, 100*(prescrip[i]/prescrip[i-1]-1))
+for (i in 2:n) {
+  y <- c(y, 100 * (prescrip[i] / prescrip[i - 1] - 1))
 }
-pct.change <- ts(y, frequency=12, start=c(1986, 9), end=c(1992,3))
-plot(pct.change, ylab="Percentage Change", main="Plot of Percentage Change")
-points(y=pct.change, x=time(pct.change), pch=as.vector(season(pct.change)))
+pct.change <- ts(y, frequency = 12, start = c(1986, 9), end = c(1992, 3))
+plot(pct.change, ylab = "Percentage Change", main = "Plot of Percentage Change")
+points(y = pct.change, x = time(pct.change), pch = as.vector(season(pct.change)))
 ```
 
 Cosine trend
@@ -294,7 +294,7 @@ All based on the percentage change
 
 ```{r}
 har. <- harmonic(pct.change, 1)
-model.presc <- lm(pct.change~har.)
+model.presc <- lm(pct.change ~ har.)
 summary(model.presc)
 ```
 
@@ -304,15 +304,15 @@ d) TS plot of residuals
 - fairly even spread -> white noise assumption is okay
 
 ```{r}
-res <- ts(rstudent(model.presc), frequency = 12, start = c(1986, 9), end=c(1992, 3))
-plot(res, ylab="Residuals", main="Time Series Plot of Residuals")
-points(y=res, x=time(res), pch=as.vector(season(res)))
+res <- ts(rstudent(model.presc), frequency = 12, start = c(1986, 9), end = c(1992, 3))
+plot(res, ylab = "Residuals", main = "Time Series Plot of Residuals")
+points(y = res, x = time(res), pch = as.vector(season(res)))
 ```
 ```{r}
 adf.test(res)
 ```
 ```{r}
-acf(res, main="Autocorrelation of Residuals")
+acf(res, main = "Autocorrelation of Residuals")
 ```
 
 Autocorrelation
@@ -321,11 +321,11 @@ Autocorrelation
 - white noise okay
 
 ```{r}
-hist(res, xlab="Residual", main="Histogram of Residuals")
+hist(res, xlab = "Residual", main = "Histogram of Residuals")
 ```
 ```{r}
-qqnorm(res, main="Normal Probability Plot of Residuals")
-abline(a=0, b=1)
+qqnorm(res, main = "Normal Probability Plot of Residuals")
+abline(a = 0, b = 1)
 ```
 
 Normality

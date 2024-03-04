@@ -35,8 +35,8 @@ Interpretation:
 
 
 ```{r}
-model1 <- lm(winnebago ~ time(winnebago))
-summary(model1)
+lm_model_a <- lm(winnebago ~ time(winnebago))
+summary(lm_model_a)
 ```
 
 - We expect the wages to increase by $200.74 per year
@@ -45,12 +45,12 @@ summary(model1)
 
 ```{r}
 plot(winnebago, xlab = expression("Time"), ylab = expression("Sales"), main = expression("Time Series Plot of Winnebago with a least squares regression fit"))
-abline(model1, col = 'red')
+abline(lm_model_a, col = 'red')
 ```
 
 ```{r}
-res1 <- as.ts(rstandard(model1))
-plot(res1, xlab = expression("Time"), ylab = expression("Residuals"), main = "Plot of Residuals versus Time")
+lm_model_a_std_res <- as.ts(rstandard(lm_model_a))
+plot(lm_model_a_std_res, xlab = expression("Time"), ylab = expression("Residuals"), main = "Plot of Residuals versus Time")
 abline(h = 0, col = 'red')
 ```
 
@@ -78,18 +78,18 @@ Interpretation:
 ## d)
 
 ```{r}
-model2 <- lm(ln_winnebago ~ time(ln_winnebago))
-summary(model2)
+lm_model_d <- lm(ln_winnebago ~ time(ln_winnebago))
+summary(lm_model_d)
 ```
 
 ```{r}
 plot(ln_winnebago, xlab = expression("Time"), ylab = expression("ln Sales"), main = expression("Time Series Plot of Winnebago with a least squares regression fit"))
-abline(model2, col = 'red')
+abline(lm_model_d, col = 'red')
 ```
 
 ```{r}
-res2 <- as.ts(rstandard(model2))
-plot(res2, xlab = expression("Time"), ylab = expression("Residuals"), main = "ln Plot of Residuals versus Time")
+lm_model_d_std_res <- as.ts(rstandard(lm_model_d))
+plot(lm_model_d_std_res, xlab = expression("Time"), ylab = expression("Residuals"), main = "ln Plot of Residuals versus Time")
 abline(h = 0, col = 'red')
 ```
 
@@ -102,20 +102,20 @@ Interpretation:
 
 ```{r}
 months <- season(winnebago)
-model3 <- lm(ln_winnebago ~ months - 1)
-summary(model3)
+lm_model_e <- lm(ln_winnebago ~ months + time(winnebago))
+summary(lm_model_e)
 ```
 
-- $98.01\%$ of the variance can be explained by the predictor variables
+- $89.46\%$ of the variance can be explained by the predictor variables
 - the linear trend is significant because the p-value $2.2 \cdot 10^{-16}$ is smaller than $10^{-12}$
 
-```{r}
-res3 <- as.ts(rstandard(model3))
-plot(res3, x = as.vector(time(winnebago)), xlab = "Time", ylab = "Standardized Residuals", main = "Standardized Residuals", type = "l")
-points(y = rstudent(model3), x = as.vector(time(winnebago)), pch = as.vector(season(winnebago)))
-```
-
 ## f)
+
+```{r}
+lm_model_e_std_res <- as.ts(rstandard(lm_model_e))
+plot(lm_model_e_std_res, x = as.vector(time(winnebago)), xlab = "Time", ylab = "Standardized Residuals", main = "Standardized Residuals", type = "l")
+points(y = rstudent(lm_model_e), x = as.vector(time(winnebago)), pch = as.vector(season(winnebago)))
+```
 
 - looking at the residuals, we can revert our assumption of a seasonal trend
 - we do not see an obvious pattern of the months at the highs and lows
@@ -123,15 +123,14 @@ points(y = rstudent(model3), x = as.vector(time(winnebago)), pch = as.vector(sea
 ## g)
 
 ```{r}
-plot(res3, x = as.vector(time(winnebago)), xlab = "Time", ylab = "Standardized Residuals", main = "Standardized Residuals", type = "l")
+lm_model_e_res <- residuals(lm_model_e)
+plot(lm_model_e_res, x = as.vector(time(winnebago)), xlab = "Time", ylab = "Residuals", main = "Residuals", type = "l")
 ```
-
-- We plotted the exact same graph as in e) because we did not see any difference in the exercise.
 
 ## h)
 
 ```{r fig.height = 5}
-acf(res1, main = "Autocorrelation Plot of Residuals for res1")
+acf(lm_model_a_std_res, main = "Autocorrelation Plot of Residuals for linear model a")
 ```
 
 - significant autocorrelation at lags 1, 2, 3
@@ -139,52 +138,51 @@ acf(res1, main = "Autocorrelation Plot of Residuals for res1")
 - small magnitude with ca. .3
 
 ```{r fig.height = 5}
-acf(res2, main = "Autocorrelation Plot of Residuals for res2")
+acf(lm_model_d_std_res, main = "Autocorrelation Plot of Residuals for linear model d")
 ```
 
 - significant autocorrelation at lags 1, 2, 11, 12, 16, 17, 18
 - periodic behaviour
 
 ```{r fig.height = 5}
-acf(res3, main = "Autocorrelation Plot of Residuals for res3")
+acf(lm_model_e_std_res, main = "Autocorrelation Plot of Residuals for linear model e")
 ```
 
-- significant autocorrelation at lags 1 through 12
-- clear downward trend (seems like $e^{-x}$ behaviour) with no indication of seasonal trend
-- big magnitude with about .9
-- only positive values
+- significant autocorrelation at lags 1, 2, 13
+- cyclic trend
+- magnitude with about .6
 
 ## i)
 
 ```{r}
 par(mfrow = c(1, 2))
-qqnorm(res1, main = "Normal Probability Plot vs \n Residuals Fit for res1")
+qqnorm(lm_model_a_std_res, main = "Normal Probability Plot vs \n Residuals Fit for lm a")
 abline(a = 0, b = 1, col = 'red')
-hist(res1, xlab = "Residual", main = "Histogram of Residuals \n for res1")
+hist(lm_model_a_std_res, xlab = "Residual", main = "Histogram of Residuals \n for lm a")
 ```
 
-- The quantiles of res1 are a little bit off at about -1 and we have one outlier at about 4.
+- The quantiles of the linear model a are a little bit off everywhere but somewhat equally spreaded around the line and we have one outlier at about 4.
 - Data looks somewhat normally distributed based on the histogram.
 
 ```{r}
 par(mfrow = c(1, 2))
-qqnorm(res2, main = "Normal Probability Plot vs \n Residuals Fit for res2")
+qqnorm(lm_model_d_std_res, main = "Normal Probability Plot vs \n Residuals Fit for lm d")
 abline(a = 0, b = 1, col = 'red')
-hist(res2, xlab = "Residual", main = "Histogram of Residuals \n for res2")
+hist(lm_model_d_std_res, xlab = "Residual", main = "Histogram of Residuals \n for lm d")
 ```
 
-- Again, we have outliers at -3 and 2 but not as bad as in res1.
+- Again, we have outliers at -3 and 2 but not as bad as in linear model a.
 - Looking at the histogram, we have normal distributed data if we do not take the values at -2 into account.
 
 ```{r}
 par(mfrow = c(1, 2))
-qqnorm(res3, main = "Normal Probability Plot vs \n Residuals Fit for res3")
+qqnorm(lm_model_e_std_res, main = "Normal Probability Plot vs \n Residuals Fit for lm e")
 abline(a = 0, b = 1, col = 'red')
-hist(res3, xlab = "Residual", main = "Histogram of Residuals \n for res3")
+hist(lm_model_e_std_res, xlab = "Residual", main = "Histogram of Residuals \n for lm e")
 ```
 
-- The quantiles are a bit more off this time but all in all they are also somewhat normally distributed.
-- The histogram shows a nearly normal distribution without the values from -.5 to -1.
+- The quantiles look great, nearly all of them are very close to the line.
+- The histogram shows a nearly normal distribution but the values from -1 to 0 and 0 to 1 are not that symmetric as they should be.
 
 ### Problem 3
 

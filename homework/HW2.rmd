@@ -6,6 +6,10 @@ date: 02/28/24
 output: pdf_document
 ---
 
+```{r echo = F, out.extra = 'page=1'}
+knitr::include_graphics("../homework/Homework2_ex1and3.pdf")
+```
+
 ```{r, echo = F}
 library(knitr)
 opts_chunk$set(tidy.opts = list(width.cutoff = 60),
@@ -184,7 +188,12 @@ hist(lm_model_e_std_res, xlab = "Residual", main = "Histogram of Residuals \n fo
 - The quantiles look great, nearly all of them are very close to the line.
 - The histogram shows a nearly normal distribution but the values from -1 to 0 and 0 to 1 are not that symmetric as they should be.
 
-### Problem 3
+```{r echo = F, out.extra = "page=2"}
+knitr::include_graphics("../homework/Homework2_ex1and3.pdf")
+```
+```{r echo = F, out.extra = "page=3"}
+knitr::include_graphics("../homework/Homework2_ex1and3.pdf")
+```
 
 ## c)
 

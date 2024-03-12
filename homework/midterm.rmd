@@ -1,0 +1,44 @@
+---
+title: "Time Series"
+subtitle: "Midterm project"
+author: Sven Bergmann
+date: 03/12/24
+output: pdf_document
+---
+
+```{r, echo = F}
+library(knitr)
+opts_chunk$set(tidy.opts = list(width.cutoff = 60),
+               tidy = TRUE)
+```
+
+# Part 1
+
+## 1.
+
+I am expecting a somewhat clear upward trend due to the increase in the population.
+Also, there could be a seasonal trend, such that the retail sales are higher on special holidays.
+Since the Brexit was later than 2007, I am not expecting a big sink somewhere in the graph.
+
+```{r, warning = F, echo = F}
+library(TSA)
+```
+```{r}
+data(retail)
+plot(retail, xlab = expression("Time"), ylab = expression("Retail sales"), main = expression("Time Series Plot of Retail sales"))
+points(retail, pch = as.vector(season(retail)))
+```
+
+Seeing the actual graph, I can confirm the upward trend and also a very strong seasonal behaviour.
+I clearly expected more holidays to be that present as christmas.
+There surely is a really strong seasonal behaviour due to christmas.
+This means that the sales are going up starting November each year and reach the peak in December before dropping again.
+
+## 2.
+
+I would try a seasonal ARIMA model, given the upward trend and the potential seasonality.
+
+```{r}
+model <- forecast::auto.arima(retail, seasonal = TRUE)
+summary(model)
+```

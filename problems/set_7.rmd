@@ -184,6 +184,8 @@ points(y = res, x = time(res), pch = as.vector(season(res)))
 ```
 
 ```{r}
-qqnorm(res)
-abline(a=0, b=1, col='red')
+par(mfrow = c(1, 2))
+qqnorm(res, main = "Normal Probability Plot vs \n Residuals Fit")
+abline(a = 0, b = 1, col = "red")
+hist(res, xlab = "Residual", main = "Histogram of Residuals")
 ```

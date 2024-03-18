@@ -42,3 +42,30 @@ I would try a seasonal ARIMA model, given the upward trend and the potential sea
 model <- forecast::auto.arima(retail, seasonal = TRUE)
 summary(model)
 ```
+
+HERE SHOULD THE COMMENT ON THE COEFFICIENTS AND SIGNIFICANCES GO.
+```{r}
+residuals(model)
+```
+
+## 3.
+
+```{r}
+res <- ts(rstandard(model), start = c(1986, 1), end = c(2007, 3), frequency = 12)
+plot(res, xlab = "Time", ylab = "Residual", main = "Time Series Plot of Residuals")
+points(y = res, x = time(res), pch = as.vector(season(res)))
+```
+```{r}
+qqnorm(res)
+abline(a = 0, b = 1, col = 'red')
+```
+```{r}
+acf(res, main = "Autocorrelation Plot of Residuals")
+```
+
+# Part 2
+
+```{r}
+series <- read.delim(file = "./homework/MidtermPt2.txt", header = TRUE, sep = " ")
+plot(unlist(series) ~ seq_along(unlist(series)), type = 'l')
+```

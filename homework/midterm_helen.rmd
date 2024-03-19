@@ -1,0 +1,94 @@
+---
+title: "Time Series Analysis"
+subtitle: "Midterm project"
+author: Helen Kafka
+output: pdf_document
+---
+
+# Part 1
+
+## 1.
+
+I am expecting a somewhat clear upward trend due to economic growth causing
+people to have more money to spend, inflation causing prices to rise, and population growth
+increasing demand for retail products.
+Also, there could be a seasonal trend (e.g. people spend more money during Christmas season),
+such that the retail sales are higher on special holidays.
+Because the Brexit was later than 2007, I am not expecting a big sink somewhere in the graph.
+
+```{r, warning = F, echo = F}
+library(TSA)
+```
+```{r}
+data(retail)
+plot(retail, xlab = expression("Time"), ylab = expression("Retail sales (in billions of pounds)"), main = expression("Time Series Plot of UK Retail sales 1987-2007"))
+points(retail, pch = as.vector(season(retail)))
+```
+
+When seeing the plot, I can confirm the upward trend.
+It is also obvious that there is a seasonal trend, that is described by a peek while Christmas season.
+This means that the sales are going up starting November each year and reach the peak in December before dropping again.
+
+## 2.
+
+I would try a seasonal ARIMA model, given the upward trend and the potential seasonality.
+
+```{r}
+model <- forecast::auto.arima(retail, seasonal = TRUE)
+summary(model)
+```
+
+The coefficients for the ARIMA model are given by (p, d, q) = (1, 0, 4). Hence, we have a first order degree autoregressive model,
+zero order of differencing and a fourth order moving average model. (0,1,1) indicates significance at lag 11 and 12 in the ACF but
+no other significant spikes. "[12]" indicates the number of periods per season.
+The PACF will show exponential decay in the seasonal lags; that is, at lags 12, 24, 36 and so on.
+
+
+```{r}
+confint(model)
+```
+
+HERE SHOULD THE COMMENT ON SIGNIFICANCES GO.
+```{r}
+residuals(model)
+```
+
+## 3.
+
+```{r}
+res <- ts(rstandard(model), start = c(1986, 1), end = c(2007, 3), frequency = 12)
+plot(res, xlab = "Time", ylab = "Residual", main = "Time Series Plot of Residuals")
+points(y = res, x = time(res), pch = as.vector(season(res)))
+```
+```{r}
+qqnorm(res)
+abline(a = 0, b = 1, col = 'red')
+hist(res, main = "Histogram of the residuals")
+```
+
+The QQ-Plot and the histogram indicate that we have somewhat standard-normal distributed residuals.
+
+```{r}
+acf(res, main = "Autocorrelation Plot of Residuals")
+```
+
+The autocorrelation plot shows no significant lags. Especially, the lags are in absolut value smaller than 0.1. There are positive and negative lags,
+such as movement around 0 and no seasonality to see.
+
+# Part 2
+
+```{r}
+#series <- read.delim(file = "/Midtermpt2.txt", header = TRUE, sep = " ")
+series <- read.table(file = "./MidtermPt2.txt", header = TRUE, sep = " ", stringsAsFactors = FALSE)
+plot(unlist(series) ~ seq_along(unlist(series)), type = 'l')
+```
+```{r}
+modelseries <- forecast::auto.arima(series, seasonal = TRUE)
+summary(modelseries)
+```
+```{r}
+diffs <- diff(series, 1)
+series2 <- ts(series[-1], start=c(1986, 2), end=c(2007, 12), frequency = 12)
+diffs2 <- ts(diffs, start=c(1986, 2), end=c(2007, 12), frequency = 12)
+#plot(diffs2)
+```

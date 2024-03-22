@@ -1,0 +1,113 @@
+---
+title: "Time Series"
+subtitle: "Midterm project"
+author: Sven Bergmann
+date: 03/12/24
+output: pdf_document
+---
+
+```{r, echo = F}
+library(knitr)
+opts_chunk$set(tidy.opts = list(width.cutoff = 60),
+               tidy = TRUE)
+```
+
+# Part 1
+
+## 1.
+
+I am expecting a somewhat clear upward trend due to the increase in the population.
+Also, there could be a seasonal trend, such that the retail sales are higher on special holidays.
+Since the Brexit was later than 2007, I am not expecting a big sink somewhere in the graph.
+
+```{r, message = F}
+library(TSA)
+```
+```{r}
+data(retail)
+plot(retail, xlab = expression("Time"), ylab = expression("Retail sales"), main = expression("Time Series Plot of Retail sales"))
+points(retail, pch = as.vector(season(retail)))
+```
+
+Seeing the actual graph, I can confirm the upward trend and also a very strong seasonal behaviour.
+I clearly expected more holidays to be that present as christmas.
+There surely is a really strong seasonal behaviour due to christmas.
+This means that the sales are going up starting November each year and reach the peak in December before dropping again.
+
+## 2.
+
+I would try a seasonal ARIMA model, given the upward trend and the potential seasonality.
+
+```{r message = F}
+model <- forecast::auto.arima(retail, seasonal = TRUE)
+summary(model)
+```
+
+### Model type and coefficients
+
+Looking at the summary, we are given an ARIMA model with $p = 1$, $d = 0$, $q = 4$,
+where $q$ is the autoregressive order with the coefficient $ar_1 = 0.8469$,
+also known as the lag order.
+$d$ is the number of differences we take,
+which is 0, so that indicates that the data is already stationary.
+And $q$ is the order of the moving average process,
+where the coefficients are $ma_1 = -0.5939$, $ma_2 = 0.0504$, $ma_3 = 0.0878$, $ma_4 = 0.1742$.
+Speaking in a sentence, we have a first order degree autoregressive model with zero order of differencing
+and a fourth order moving average model.
+That was for the non-seasonal part.
+For the seasonal part, we have $p = 0$, $d = 1$, $q = 1$,
+where $p$, $d$ and $q$ are exactly as above.
+The number 12 in brackets just states the number of seasons (here: months).
+
+### Fit
+
+We have some values to rate the model fit, which are
+\begin{align*}
+\sigma^2 &= 3.413, \\
+\log \text{likelihood} &= -491.04, \\
+AIC &= 998.07, \\
+AICc &= 998.69, \\
+BIC &= 1026.02.
+\end{align*}
+Here, we can just look at AIC and BIC which suggest a reasonable choice based on model complexity vs fit.
+The other values are basically for forecasting reasons.
+
+## 3.
+
+```{r}
+res <- ts(rstandard(model), start = c(1986, 1), end = c(2007, 3), frequency = 12)
+plot(res, xlab = "Time", ylab = "Residual", main = "Time Series Plot of Residuals")
+points(y = res, x = time(res), pch = as.vector(season(res)))
+```
+
+The plot of the residuals is kind of displaying the seasonal/periodic behaviour.
+
+```{r}
+par(mfrow = c(1, 2))
+qqnorm(res, main = "Normal Probability Plot vs \n Residuals Fit")
+abline(a = 0, b = 1, col = "red")
+hist(res, xlab = "Residual", main = "Histogram of Residuals")
+```
+
+The residuals look like they are normally distributed, indicating a good model fit.
+
+```{r}
+shapiro.test(res)
+```
+
+Since the p-value of the Shapiro-Wilk test is also really low, we can say that they are normally distributed.
+
+```{r}
+acf(res, main = "Autocorrelation Plot of Residuals")
+```
+
+Since there are just some "spikes" which are not at all big,
+the chosen model seems to capture the time-series pretty well.
+Also, no value is outside of the confidence interval.
+
+# Part 2
+
+```{r}
+data <- as.ts(read.delim(file = "../homework/MidtermPt2.txt", header = TRUE, sep = " "))
+plot(data, main = "Original Series")
+```

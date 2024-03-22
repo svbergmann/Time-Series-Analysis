@@ -20,8 +20,9 @@ I am expecting a somewhat clear upward trend due to the increase in the populati
 Also, there could be a seasonal trend, such that the retail sales are higher on special holidays.
 Since the Brexit was later than 2007, I am not expecting a big sink somewhere in the graph.
 
-```{r, message = F}
+```{r, message = F, warning = F}
 library(TSA)
+library(tseries)
 ```
 ```{r}
 data(retail)
@@ -110,4 +111,36 @@ Also, no value is outside of the confidence interval.
 ```{r}
 data <- as.ts(read.delim(file = "../homework/MidtermPt2.txt", header = TRUE, sep = " "))
 plot(data, main = "Original Series")
+```
+```{r}
+adf_test <- adf.test(data)
+print(adf_test)
+```
+```{r}
+d_data <- diff(data)
+plot(d_data, main = "Differenced Series")
+```
+```{r}
+adf_test <- adf.test(d_data)
+print(adf_test)
+```
+```{r}
+log_data <- log(data)
+plot(log_data, main = "Log Transformed Series")
+```
+```{r}
+#adf_test <- adf.test(log_data)
+#print(adf_test)
+```
+```{r}
+model <- forecast::auto.arima(d_data)
+summary(model)
+```
+```{r}
+#model <- forecast::auto.arima(log_data)
+#summary(model)
+```
+```{r}
+model <- forecast::auto.arima(data)
+summary(model)
 ```

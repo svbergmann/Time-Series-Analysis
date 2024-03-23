@@ -113,34 +113,68 @@ data <- as.ts(read.delim(file = "../homework/MidtermPt2.txt", header = TRUE, sep
 plot(data, main = "Original Series")
 ```
 ```{r}
-adf_test <- adf.test(data)
-print(adf_test)
+adf.test(data)
 ```
+
+Just looking at the plot, we cannot really say if the series is stationary or no.
+Looking at the Dickey-Fuller Test and seeing that we have a p-value of 0.4637 we cannot reject the null hypothesis,
+so this indicates that this series is non-stationary.
+
+```{r}
+acf(data, main = 'Autocorrelationfunction for original series')
+```
+
+Looking at the plot for the autocorrelationfunction, we see a decreasing over time and therefore a dependence on time.
+This is another indicator for a non-stationary series.
+
+Let us consider the first difference as an approach to make the series stationary.
+
 ```{r}
 d_data <- diff(data)
 plot(d_data, main = "Differenced Series")
+abline(a = 0, b = 0, col = 'red')
 ```
+
+We see a fairly constant "behaviour" around 0 and an evenly spread, which is an indicator for stationarity.
+
 ```{r}
-adf_test <- adf.test(d_data)
-print(adf_test)
+adf.test(d_data)
 ```
+
+Looking at the Dickey-Fuller Test again, the p-value is even smaller than the printed value which is 0.01, meaning that we can reject the null-hypothesis and assume that the series is stationary.
+
 ```{r}
-log_data <- log(data)
-plot(log_data, main = "Log Transformed Series")
+acf(d_data, main = 'Autocorrelationfunction for first differenced series')
 ```
-```{r}
-#adf_test <- adf.test(log_data)
-#print(adf_test)
-```
+
+Also, looking at the autocorrelationfunction for the first difference,
+we can see a strong "improvement".
+We cannot see any periodic behaviour,
+or any significant spike and the values are really small,
+which is an indicator for stationarity.
+
 ```{r}
 model <- forecast::auto.arima(d_data)
 summary(model)
 ```
+
+If we are just fitting an ARIMA model to the first difference, we get $p=d=q=0$,
+indicating, that we have a stationary model by taking the first difference.
+
 ```{r}
-#model <- forecast::auto.arima(log_data)
-#summary(model)
+res <- ts(rstandard(model))
+plot(res, xlab = "Time", ylab = "Residual", main = "Time Series Plot of Residuals")
+abline(a = 0, b = 0, col = 'red')
 ```
+
+Plotting the residuals, we see an evenly spread of the variance and the residuals of the first difference stay around 0.
+
 ```{r}
-model <- forecast::auto.arima(data)
-summary(model)
+par(mfrow = c(1, 2))
+qqnorm(res, main = "Normal Probability Plot vs \n Residuals Fit")
+abline(a = 0, b = 1, col = "red")
+hist(res, xlab = "Residual", main = "Histogram of Residuals")
 ```
+
+Looking at the distribution of the residuals, we see that they are normally distributed,
+which indicates a good model fit and therefore also stationarity.

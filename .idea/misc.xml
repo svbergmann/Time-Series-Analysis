@@ -72,6 +72,7 @@
         <entry key="file://$PROJECT_DIR$/problems/set_8.rmd">
           <value>
             <RMarkdownRenderProfile>
+              <option name="lastOutput" value="$PROJECT_DIR$/problems/set_8.pdf" />
               <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/problems" />
             </RMarkdownRenderProfile>
           </value>

@@ -1,0 +1,191 @@
+---
+title: "Problem Solving Set 7"
+author: Sven Bergmann
+date: March 11, 2024
+output: pdf_document
+---
+
+```{r, echo = F}
+library(knitr)
+opts_chunk$set(tidy.opts = list(width.cutoff = 60), tidy = TRUE, fig.width = 12, fig.height = 8)
+```
+```{r}
+library(TSA)
+library(MASS)
+```
+
+# Problem 2
+
+```{r}
+wn <- c(0.63, -1.25, 1.80, 1.51, 1.56, 0.62, 0.64, -0.98)
+Y <- wn[1]
+for (i in 2:length(wn)) {
+  Y <- c(Y, 3 * Y[i - 1] + wn[i])
+  print(Y)
+}
+```
+
+# Problem 5
+
+```{r}
+data(airpass)
+```
+
+## a)
+
+```{r}
+plot(airpass, xlab = "Time", ylab = "Airline Passengers", main = "Time Series Plot of Passengers")
+points(y = airpass, x = time(airpass), pch = as.vector(season(airpass)))
+```
+
+- seasonality (peaks in warmer months)
+- upward linear trend
+- increasing spread over time
+-> not stationary
+
+## b)
+
+```{r}
+logs <- as.ts(log(airpass))
+plot(logs, xlab = "Time", ylab = "Log Passengers", main = "Plot of Log Passengers")
+points(y = logs, x = time(logs), pch = as.vector(season(logs)))
+```
+
+- positive trend
+- seasonality
+- spread fairly even now
+
+## c)
+
+```{r}
+diffs <- diff(airpass, 1)
+airpass.2 <- ts(airpass[-1], start = c(1960, 2), end = c(1971, 12), frequency = 12)
+frac.rel <- ts(diffs / airpass.2, start = c(1960, 2), end = c(1971, 12), frequency = 12)
+```
+
+```{r}
+plot(frac.rel, xlab = "Time", ylab = "Fractional Relative Difference", main = "Time Series Plot--Fractional Rel Diff")
+points(y = frac.rel, x = time(frac.rel), pch = as.vector(season(frac.rel)))
+```
+
+$\frac{Y_t - Y_{t-1}}{Y_{t-1}}$
+
+- seasonality
+- "random" scatter about 0
+- fairly even spread
+
+```{r}
+plot(diff(logs), xlab = "Time", ylab = "First difference--Logs", main = "First Difference--Logs")
+points(y = diff(logs), x = time(diff(logs)), pch = as.vector(season(diff(logs))))
+```
+
+$\bigtriangledown \log(Y_t)$
+
+- nearly indistinguishable
+- from fractional relative difference
+
+## Fit seasonal means model to transformed series
+
+```{r}
+dif <- diff(logs)
+months <- season(diff(logs))
+model <- lm(dif ~ months)
+```
+
+### Modeling $Y_t$
+
+1. Use $\log(Y_t)$, remove linear trend
+- fit seasonal means or use cosine trend
+2. Use frac.rel.diff or $\bigtriangledown\log(Y_t)$
+- fit seasonal means or use cosine trend
+
+# Problem 6
+
+```{r}
+data(JJ)
+```
+
+```{r}
+plot(JJ, xlab = "Time", ylab = "Earnings Per Share", main = "Time Series Plot of Quarterly Earnings Per Share")
+points(y = JJ, x = time(JJ), pch = as.vector(season(JJ)))
+
+```
+
+- exponential or quadratic positive trend
+- seasonality (peak in Q3, dips in Q4)
+- variance increases over time:
+-> not stationary
+
+```{r, warning = F}
+lam <- seq(-0.5, 0.5, 0.1)
+m <- BoxCox.ar(JJ, lambda = lam)$loglike
+```
+
+### Box-Cox transformation
+
+$y^* = \frac{y^\lambda - 1}{\lambda}$
+
+```{r, warning = F}
+lambda <- lam[which(m == max(m))]
+transform <- (JJ^lambda - 1) / lambda
+```
+
+For $\hat{\lambda} = 0.2$:
+$y^* = \frac{y^{0.2}-1}{0.2}$
+
+```{r}
+plot(transform, xlab = "Time", ylab = "Transformed Earnings", main = "Time Series Plot--Transformed Earnings")
+points(y = transform, x = time(transform), pch = as.vector(season(transform)))
+```
+
+- trend is now linear
+- variance is a little more stable, still a bit uneven
+- still seasonality
+
+```{r}
+diffs <- diff(transform, 1)
+plot(diffs, xlab = "Time", ylab = "First Difference--Transformed Earnings", main = "First Difference--Transformed Earnings")
+points(y = diffs, x = time(diffs), pch = as.vector(season(diffs)))
+```
+
+### Possible fixes
+
+- take difference to remove the linear trend
+- cosine trend or seasonal means to address seasonality
+
+### What we actually see
+- difference took out the linear trend
+
+```{r}
+diffs2 <- diffs + 1 # get rid of negative values
+logs2 <- log(diffs2)
+months <- season(logs2)
+plot(logs2, xlab = "Time", ylab = "Transformed Earnings", main = "Time Series Plot--Transformed Earnings")
+points(y = logs2, x = time(logs2), pch = as.vector(season(logs2)))
+```
+
+- log transform fared no better
+- still have the bowtie pattern
+- still have the seasonality
+
+```{r}
+model2 <- lm(logs2 ~ months)
+res <- ts(rstandard(model2), start = c(1960, 2), end = c(1980, 3), frequency = 4)
+plot(res, xlab = "Time", ylab = "Residual", main = "Time Series Plot of Residuals")
+points(y = res, x = time(res), pch = as.vector(season(res)))
+```
+
+- fitting seasonal means fixes seasonality
+- variance problem remains
+
+```{r}
+plot(res, xaxt = "n", xlab = "Time", ylab = "Residual", main = "Time Series Plot of Residuals")
+points(y = res, x = time(res), pch = as.vector(season(res)))
+```
+
+```{r}
+par(mfrow = c(1, 2))
+qqnorm(res, main = "Normal Probability Plot vs \n Residuals Fit")
+abline(a = 0, b = 1, col = "red")
+hist(res, xlab = "Residual", main = "Histogram of Residuals")
+```

@@ -1,0 +1,174 @@
+---
+title: "Problem Solving Set 8"
+author: Sven Bergmann
+date: March 25, 2024
+output: pdf_document
+---
+
+```{r, echo = F}
+library(knitr)
+opts_chunk$set(tidy.opts = list(width.cutoff = 60), tidy = TRUE, fig.width = 12, fig.height = 8)
+```
+```{r, warning = F, message = F}
+library(TSA)
+library(tseries)
+```
+```{r}
+set.seed(1172)
+```
+
+# Problem 7
+
+```{r}
+phi <- c(0.7, -0.4)
+ar2.series <- arima.sim(n = 72, list(ar = phi, sd = 1))
+```
+
+## Part a
+
+```{r}
+ar2acf <- ARMAacf(ar = c(0.7, -0.4), lag.max = 10, pacf = FALSE)
+plot(ar2acf, xlab = "Lag", ylab = "Theoretical ACF", main = "Theoretical ACF AR(2)", type = "h") # type = 'h' gives the vertical lines
+abline(h = 0)
+```
+
+- dies out beyond lag 5
+
+## Part b
+
+```{r}
+acf.samp <- acf(ar2.series, main = "AR(2) Sample Autocorrelation", lag.max = 40)
+acf.samp$acf
+```
+
+- "cuts off" after lag 1
+- dies out way slower than the theoretical autocorrelation
+- due to short series / small sample size
+- meaning if we take a longer series, e.g. 7200 it dies out way faster
+
+## Part c
+
+```{r}
+rho12 <- ar2acf[2:3]
+rho1 <- phi[1] / (1 - phi[2])
+rho2 <- (rho12[2] - rho12[1]^2) / (1 - rho12[1]^2)
+rho1
+rho2
+```
+```{r}
+ar2pacf <- ARMAacf(ar = c(0.7, -0.4), pacf = TRUE)
+plot(ar2pacf, xlab = "Lag", ylab = "Theoretical PACF", main = "Theoretical PACF AR(2)", type = "h")
+abline(h=0)
+```
+
+- PACF is denoted in the book also as $\phi$ but with to subscripts
+- $\phi_{1,1} = \frac{\phi_1}{1-\phi_2}$
+- $\phi_{2,2} = \frac{\rho_2 - \rho_1^2}{1 - \rho_1^2}$
+- cuts off after lag 2 in theory
+
+## Part d
+
+```{r}
+samp.pacf <- pacf(ar2.series, main = "AR(2) Sample Partial Autocorrelation")
+```
+
+- does not cut off after lag 2
+- significant autocorrelation at lag 6
+- does not match theoretical PACF well
+
+```{r}
+eacf(ar2.series)
+```
+
+# Problem 8
+
+```{r}
+theta <- c(-0.7, 0.4)
+ma2 <- arima.sim(n = 36, list(ma = theta, sd = 1))
+ma2acf <- ARMAacf(ma = theta, lag.max = 4, pacf = FALSE)
+ma2acf
+```
+```{r}
+acfs <- acf(ma2, main = "ACF for MA(2)")
+acfs$acf
+```
+
+- matches theoretical ACF really well.
+
+```{r}
+acfma2 <- acfs$acf
+```
+```{r}
+pacfMA2 <- ARMAacf(ma = theta, lag.max = 10, pacf = TRUE)
+pacfMA2
+plot(pacfMA2, xlab = "Lag", ylab = "Theoretical PACF", main = "Theoretical PACF MA(2)", type = "h")
+abline(h = 0)
+```
+
+- dies out
+
+```{r}
+pacf.samp <- pacf(ma2, main = "Sample MA(2) PACF")
+pacfs <- pacf.samp$acf
+pacfs
+```
+
+- match up really well with the theoretical PACF
+
+```{r}
+#eacf(ma2)
+```
+
+### Specification
+
+- fit MA(1), AR(1), ARMA(1,1)
+- see what works best
+
+# Problem 9
+
+## Part a
+
+```{r}
+theor.ac <- ARMAacf(ar = c(0.7), lag.max = 5, pacf = FALSE)
+theor.pac <- ARMAacf(ar = c(0.7), lag.max = 5, pacf = TRUE)
+set.seed(2)
+ar.series <- arima.sim(n = 48, list(ar = 0.7, sd = 1))
+```
+
+## Part b
+
+```{r}
+acs <- acf(ar.series, plot = F)$acf[c(1, 5)]
+acs
+```
+
+## Part c
+
+```{r}
+ar.series2 <- arima.sim(n = 48, list(ar = 0.7, sd = 1))
+acs2 <- acf(ar.series2, plot = F)$acf[c(1, 5)]
+acs2
+```
+
+## Part d
+
+```{r}
+m <- 1000
+ac1 <- NULL
+ac5 <- NULL
+for (i in 1:m) {
+  ar.s <- arima.sim(n = 48, list(ar = 0.7, sd = 1))
+  ac1 <- c(ac1, acf(ar.s, plot = F)$acf[1])
+  ac5 <- c(ac5, acf(ar.s, plot = F)$acf[5])
+
+}
+par(mfrow = c(1, 1))
+hist(ac1, xlab = expression(r[1]), main = expression(paste("Histogram of ", r[1])))
+hist(ac5, xlab = expression(r[5]), main = expression(paste("Histogram of ", r[5])))
+```
+```{r}
+var(ac1)
+```
+```{r}
+var(ac5)
+```

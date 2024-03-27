@@ -23,6 +23,36 @@
             </RMarkdownRenderProfile>
           </value>
         </entry>
+        <entry key="file://$PROJECT_DIR$/homework/midterm.rmd">
+          <value>
+            <RMarkdownRenderProfile>
+              <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/homework" />
+            </RMarkdownRenderProfile>
+          </value>
+        </entry>
+        <entry key="file://$PROJECT_DIR$/homework/midterm_helen.rmd">
+          <value>
+            <RMarkdownRenderProfile>
+              <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/homework" />
+            </RMarkdownRenderProfile>
+          </value>
+        </entry>
+        <entry key="file://$PROJECT_DIR$/homework/midterm_sven.rmd">
+          <value>
+            <RMarkdownRenderProfile>
+              <option name="lastOutput" value="$PROJECT_DIR$/homework/midterm_sven.pdf" />
+              <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/homework" />
+            </RMarkdownRenderProfile>
+          </value>
+        </entry>
+        <entry key="file://$PROJECT_DIR$/homework/midterm_sven_p1_p2.rmd">
+          <value>
+            <RMarkdownRenderProfile>
+              <option name="lastOutput" value="$PROJECT_DIR$/homework/midterm_sven_p1_p2.pdf" />
+              <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/homework" />
+            </RMarkdownRenderProfile>
+          </value>
+        </entry>
         <entry key="file://$PROJECT_DIR$/problems/set_1.rmd">
           <value>
             <RMarkdownRenderProfile>
@@ -35,6 +65,22 @@
           <value>
             <RMarkdownRenderProfile>
               <option name="lastOutput" value="$PROJECT_DIR$/problems/set_4.pdf" />
+              <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/problems" />
+            </RMarkdownRenderProfile>
+          </value>
+        </entry>
+        <entry key="file://$PROJECT_DIR$/problems/set_7.rmd">
+          <value>
+            <RMarkdownRenderProfile>
+              <option name="lastOutput" value="$PROJECT_DIR$/problems/set_7.pdf" />
+              <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/problems" />
+            </RMarkdownRenderProfile>
+          </value>
+        </entry>
+        <entry key="file://$PROJECT_DIR$/problems/set_8.rmd">
+          <value>
+            <RMarkdownRenderProfile>
+              <option name="lastOutput" value="$PROJECT_DIR$/problems/set_8.pdf" />
               <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/problems" />
             </RMarkdownRenderProfile>
           </value>
